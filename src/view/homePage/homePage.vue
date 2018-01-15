@@ -92,6 +92,9 @@ export default {
     .row-bg {
       margin-bottom: 26px;
       .card {
+        p{
+          margin:0;
+        }
         /* width: 298px; */
         height: 104px;
         margin-right: 25px;

@@ -5,13 +5,6 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-<<<<<<< HEAD
-
-/*const store = require('./store');*/
-
-
-=======
->>>>>>> f2e1fb096a70e273274a82cc8a5d40489530021f
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)

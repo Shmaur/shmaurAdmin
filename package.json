@@ -10,11 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-<<<<<<< HEAD
     "element-ui": "^2.0.10",
-=======
-    "element-ui": "^2.0.9",
->>>>>>> f2e1fb096a70e273274a82cc8a5d40489530021f
     "vue": "^2.5.2",
     "vue-resource": "^1.3.5",
     "vue-router": "^3.0.1"
