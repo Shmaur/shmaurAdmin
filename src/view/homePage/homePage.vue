@@ -1,6 +1,5 @@
 <template>
   <div class="shmaur_home">
-    这里是首页
     <div class="listCard">
       <el-row type="flex" class="row-bg" justify="space-between">
         <el-col :span="8">
@@ -67,20 +66,38 @@
         </el-col>
       </el-row>
     </div>
+    <div class="editor">
+     
+      <vue-Editor></vue-Editor>
+      <!-- <quill-Editor v-model="infor.content" class="editer" :options="editorOption" @ready="onEditorReady($event)"> </quill-Editor> -->
+    </div>
   </div>
 </template>
 <script>
+import vueEditor from '@/components/uedit.vue'
+import { quillEditor } from 'vue-quill-editor' //调用编辑器
 export default {
 
   name: 'login',
   data() {
     return {
-
+      
 
     }
   },
   components: {
+    quillEditor,
+    vueEditor
+  },
+  methods: {
+    onEditorReady(editor) {
 
+    }
+  },
+  computed: {
+    editor() {
+      return this.$refs.myQuillEditor.quill
+    }
   }
 }
 
@@ -92,8 +109,8 @@ export default {
     .row-bg {
       margin-bottom: 26px;
       .card {
-        p{
-          margin:0;
+        p {
+          margin: 0;
         }
         /* width: 298px; */
         height: 104px;

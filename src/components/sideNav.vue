@@ -16,8 +16,8 @@
       </template>
       <div class="footer">
         <p class="footer_txt">
-          <span class="footer_left">设置</span>
-          <span class="footer_right" :click="loginout">退出</span>
+          <el-button type="text" class="footer_left" @click="setting">设置</el-button>
+          <el-button type="text" class="footer_right" @click="loginout">退出</el-button>
         </p>
       </div>
     </el-menu>
@@ -75,6 +75,9 @@ export default {
     loginout() {
       localStorage.removeItem('sh_name')
       this.$router.push('/')
+    },
+    setting(){
+        this.$router.push({ path: '/home' })
     }
   }
 }

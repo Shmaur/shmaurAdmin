@@ -52,7 +52,7 @@ export default {
           if (this.loginForm.names === 'shmaur' && this.loginForm.psd === '123456') {
              this.loading = false
              localStorage.setItem('sh_name',this.loginForm.names)
-             this.$router.push({ path: '/home' })
+             this.$router.push({ path: '/homePage' })
           }else{
             this.$message.error('登录失败，请检查账户或者密码是否正确！')
           }

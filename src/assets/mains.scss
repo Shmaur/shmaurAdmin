@@ -1,4 +1,29 @@
 * {
-	margin:0;
-	padding:0;
+  margin: 0;
+  padding: 0;
+}
+
+.editer {
+  display: table-cell;
+  .ql-toolbar.ql-snow {
+    height: 66px;
+    border: 0px;
+    border-top: 1px solid #EEE;
+    border-bottom: 1px solid #EEE;
+  }
+  .ql-container.ql-snow {
+    height: 300px;
+    border: 0px;
+    border-top: 1px solid #EEE;
+  }
+}
+
+.el-input__inner {
+  border-radius: 0px;
+  border: 0px solid #fff;
+}
+
+.author {
+  border-left: 1px solid #EEE;
+  margin-left: -1px;
 }
