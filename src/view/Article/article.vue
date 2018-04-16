@@ -17,7 +17,8 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <quill-editor v-model="infor.article_content" class="editer" :options="editorOption" @ready="onEditorReady($event)"> </quill-editor>
+          <vue-Editor :text="content" :editorChange="editorChange" class="editer"></vue-Editor>
+          <!--<quill-editor v-model="infor.article_content" class="editer" :options="editorOption" @ready="onEditorReady($event)" > </quill-editor>-->
         </div>
         <div class="conment_info">
           <div class="artcle_img">
@@ -117,6 +118,9 @@ export default {
     vueFooter
   },
   methods: {
+    editorChange: function(html) {
+      this.content = html
+    },
     onEditorReady(editor) {
 
     },
@@ -141,22 +145,10 @@ export default {
     },
 
     myup(content) {
-      /*let formData = {
-        lastModified:content.file.lastModified,
-        lastModifiedDate:content.file.lastModifiedDate,
-        name:content.file.name,
-        size:content.file.size,
-        type:content.file.type,
-        webkitRelativePath:content.file.webkitRelativePath
-      }*/
-      var formData = new formData()
-      formData.append('file', content.file)
-      //formData.append('type', 'SKU')
-      console.log(formData)
-      axios.post(content.action, formData).then(res => {
-        console.log(res)
-      })
-      /*  axios({
+     let fileObj = content.file
+     let formData = new FormData()
+     formData.append('file',fileObj)
+       axios({
           method: 'post',
           headers: { 'Content-Type': 'application/json', 'Content-Type': 'text/plain' },
           url: content.action,
@@ -188,7 +180,7 @@ export default {
             content.onError('请求封装失败')
           }
 
-        })*/
+        })
     }
   }
 }
