@@ -1,73 +1,108 @@
 <template>
   <div class="login">
-    <el-form class="login_from" autoComplete="on" :model="loginForm" :rules="rules" ref="loginForm" label-position="left">
+    <el-form class="login_from" autoComplete="on" v-show="showLogin" :model="loginForm" :rules="rules" ref="loginForm" label-position="left">
       <div class="title_container">
-        <h3 class="title">shmaur</h3>
+        <h3 class="title">shmaur 登录</h3>
       </div>
-      <el-form-item prop="names" class="login_btn">
-        <el-input v-model="loginForm.names" placeholder="输入账户名称">
+      <el-form-item prop="user_login" class="login_btn">
+        <el-input v-model="loginForm.user_login" placeholder="输入账户名称">
           <i slot="prefix" class="el-input__icon el-icon-date"></i>
         </el-input>
       </el-form-item>
-      <el-form-item prop="psd" class="login_btn">
-        <el-input v-model="loginForm.psd" @keyup.enter.native="logins" placeholder="输入账户密码" :type="passwordType">
+      <el-form-item prop="user_pass" class="login_btn">
+        <el-input v-model="loginForm.user_pass" @keyup.enter.native="logins" placeholder="输入账户密码" :type="passwordType">
           <i slot="prefix" class="el-input__icon el-icon-date"></i>
           <i slot="suffix" class="el-input__icon el-icon-date" @click="showPsd"></i>
         </el-input>
       </el-form-item>
-      <el-button type="primary" class="login_go" @click="logins">登陆</el-button>
+      <el-button type="text" @click="loginRegister" >没有账号？点击注册</el-button>
+      <el-button type="primary" class="login_go" @click="logins" >登陆</el-button>
+    </el-form>
+    <el-form class="login_from" autoComplete="on" v-show="showRegister" :model="loginForm" :rules="rules" ref="loginForm" label-position="left">
+      <div class="title_container">
+        <h3 class="title">注册</h3>
+      </div>
+      <el-form-item prop="user_login" class="login_btn">
+        <el-input v-model="loginForm.user_login" placeholder="输入账户名称">
+          <i slot="prefix" class="el-input__icon el-icon-date"></i>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="user_pass" class="login_btn">
+        <el-input v-model="loginForm.user_pass" @keyup.enter.native="logins" placeholder="输入账户密码" :type="passwordType">
+          <i slot="prefix" class="el-input__icon el-icon-date"></i>
+          <i slot="suffix" class="el-input__icon el-icon-date" @click="showPsd"></i>
+        </el-input>
+      </el-form-item>
+      <el-button type="text" @click="loginRegister" >已有账号？点击登录</el-button>
+      <el-button type="primary" class="login_go" @click="logins">注册</el-button>
     </el-form>
   </div>
 </template>
-
 <script>
+import axios from 'axios'
 export default {
   name: 'login',
   data() {
     return {
-
+      showLogin: true,
+      showRegister: false,
       loginForm: {
-        names: '',
-        psd: ''
+        user_login: '',
+        ip:'',
+        user_pass: ''
       },
+      loading: false,
+      
       passwordType: 'password',
       rules: {
-        names: [{
+        user_login: [{
           required: true,
           message: '请输入用户名',
           trigger: 'blur'
         }],
-        psd: [
+        user_pass: [
           { required: true, message: '请输入密码' }
         ]
       }
 
     }
   },
+  created(){
+    axios.get('http://httpbin.org/ip').then(data=>{
+          this.loginForm.ip=data.data.origin
+        })
+  },
   methods: {
     logins() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          if (this.loginForm.names === 'shmaur' && this.loginForm.psd === '123456') {
-             this.loading = false
-             localStorage.setItem('sh_name',this.loginForm.names)
-             this.$router.push({ path: '/homePage' })
-          }else{
-            this.$message.error('登录失败，请检查账户或者密码是否正确！')
-          }
-          /*this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-            this.loading = false
-            this.$router.push({ path: '/home' })
-          }).catch(() => {
-            this.loading = false
-          })*/
+          //this.loading = true
+          let _this = this
+          
+          axios.post('http://localhost:3000/api/login', this.loginForm).then(data=> {
+           let token = data.data.data.token
+            if (data.status == 200) {
+              sessionStorage.setItem('token', token)
+              _this.$router.push({ path: '/homePage' })
+            } else {
+              this.$message.error('登录失败，请检查账户或者密码是否正确！')
+            }
+          })
         } else {
           console.log('error submit!!')
           this.$message.error('账号或密码不能为空！')
           return false
         }
       })
+    },
+    loginRegister() {
+      if (this.showLogin) {
+        this.showLogin = false
+        this.showRegister = true
+      } else {
+        this.showLogin = true
+        this.showRegister = false
+      }
     },
     showPsd() {
       if (this.passwordType === 'password') {

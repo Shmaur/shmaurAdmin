@@ -1,19 +1,32 @@
 <template>
   <div id="app">
+    
 
-    <router-view/>
+<router-view/>
   </div>
 </template>
 <script>
 
 import shmaurFont from '@/assets/style_font/css/shmaur.css'
+//import shLeftNav from '@/components/sideNav'
 
 export default {
-  name: 'app'
+  name: 'app',
+  data() {
+    return{
+
+    }
+  },
+  components:{
+    //shLeftNav
+  }
 }
 
-
+</script>
 <style>
+.main_content {
+ padding:15px 15px 15px 260px ;
+}
 * {
 	margin: 0;
 	padding: 0;

@@ -1,7 +1,8 @@
 <template>
   <div id="shmaur_uedit">
-    <el-form class="edit_from" autoComplete="on" :model="infor" :rules="rules" ref="editForm" label-position="left">
-      <el-row class="edit_row">
+<!--     <el-form class="edit_from" autoComplete="on" :model="infor" :rules="rules" ref="editForm" label-position="left">
+       -->      
+       <el-row class="edit_row">
         <el-col :span="16">
           <el-form-item prop="names" class="login_btn">
             <el-input class="edit_input" v-model="infor.title" placeholder="请输入标题">
@@ -16,24 +17,12 @@
         </el-col>
       </el-row>
       <quill-editor v-model="infor.content" class="editer" :options="editorOption" @ready="onEditorReady($event)"> </quill-editor>
-    </el-form>
-    <div class="edit_footer">
-      <div class="footer_conent">
-        <div class="edit_txt">
-          <p>正文一共：字</p>
-          <p>预计阅读时间：</p>
-        </div>
-        <div class="edit_btn">
-          <el-button type="primary">保存</el-button>
-          <el-button type="primary">保存草稿</el-button>
-        </div>
-      </div>
-    </div>
+    <!-- </el-form> -->
   </div>
 </template>
 <script>
 import 'quill/dist/quill.core.css'
-
+import vueFooter from '@/components/edit_footer'
 export default {
   name: 'uedit',
   /* props:{
@@ -56,6 +45,9 @@ export default {
   },
   mounted() {
   },
+  components: {
+    vueFooter
+  },
   methods: {
     onEditorReady(editor) {
 
@@ -69,7 +61,9 @@ export default {
   border: 1px solid #eee;
   margin-bottom: 100px;
 }
-
+.edit_row{
+    height:50px;
+  }
 .edit_footer {
   height: 102px;
   background: #FDFDFD;
