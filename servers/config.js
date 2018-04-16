@@ -3,12 +3,12 @@ const config = {
         DATABASE: 'shmaur',
         USERNAME: 'root',
         PASSWORD: 'shmaur0921',
-        PORT: '3306',
-        HOST: '127.0.0.1'
+        PORT: '3306'
+        //HOST: '127.0.0.1'
     },
     upPaht:'dist/upFile',
     JWts:{
-    	secret:'scscms',
+    	secret:'shmaur',
     	expiresIn:'2d' //超时设置 m分钟 h小时 d 天
     },
     //公用：获取客户端IP
