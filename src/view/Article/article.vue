@@ -145,12 +145,14 @@ export default {
     },
 
     myup(content) {
-     let fileObj = content.file
-     let formData = new FormData()
-     formData.append('file',fileObj)
+     let fileObj = content.file;
+     let formData = new FormData();
+     formData.append("","z");
+     formData.append("file",fileObj);
+
        axios({
           method: 'post',
-          headers: { 'Content-Type': 'application/json', 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
           url: content.action,
           data: formData
         }).then(res => {

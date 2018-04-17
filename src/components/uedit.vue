@@ -5,16 +5,17 @@
       <quill-editor ref="qullEditor" @focus="onEditorFocus($event)" v-model="infor.content" class="editer" :options="editorOption"  @change="editorChange"> </quill-editor>
     <!-- </el-form> -->
     <form action="" method="post" enctype="multipart/form-data" id="uploadFormMulti">
-    <input style="display: none" :id="uniqueId" type="file" name="avator" multiple accept="image/jpg,image/jpeg,image/png,image/gif" @change="upLoadImg('uploadFormMulti')"><!--style="display: none"-->
+    <input style="display: none" :id="uniqueId" type="file" name="avator" multiple accept="image/jpg,image/jpeg,image/png,image/gif" @change="upLoadImg()"><!--style="display: none"-->
     </form>
   </div>
 </template>
 <script>
 import "quill/dist/quill.core.css";
 import { quillEditor } from "vue-quill-editor";
-import Promise from 'promise-polyfill';
+import Promise from "promise-polyfill";
 import Quill from "quill";
 import vueFooter from "@/components/edit_footer";
+import axios from "axios";
 export default {
   name: "uedit",
   props: ["text", "editorId"],
@@ -28,6 +29,7 @@ export default {
       uniqueId: "",
       imgPercent: "",
       editorContent: "",
+      urlPath: "",
       editorOption: {
         placeholder: "请输入文章内容",
         history: {
@@ -63,53 +65,48 @@ export default {
       var _this = this;
       _this.$emit("editorChange", html);
     },
-    onEditorFocus(event){
-      console.log(event)
-      console.log('获取到光标')
-event.enable(true)
-
+    onEditorFocus(event) {
+      console.log(event);
+      console.log("获取到光标");
+      event.enable(true);
     },
-      upLoadImg:async function(id){
-      var _this = this;
-      // _this.imageloading =true //上传加载动画
+    upLoadImg: async function() {
+      let _this = this;
+      let filse = this.$el.children.uploadFormMulti[0].files[0];
       let formData = new FormData();
-      console.log(formData);
-      //console.log(upLoadImg);
-      try {
-        const url = await _this.upLoadImgAdd(formData);
-        console.log(url);
-        if (url != null && url.length > 0) {
-          let _url = url;
-          _url = _url.indexOf("http") != -1 ? _url : "http:" + _url; //如果返回的地址中没有http自动拼接
-          let index = _this.addImgRange != null ? _this.addImgRange.index : 0; //获取插入时的位置索引，如果获取失败，则插入到最前面
-          _this.$refs.qullEditor.quill.insertEmbed(index,"image",_url);
-          let _img = new Image();
-          _img.src = _url;
-          _this.$refs.qullEditor.quill.FormatText(
-            index,
-            index + 1,
-            "width",
-            400 + "px"
-          );
-        } else {
-        }
-        document.getElementById(_this.uniqueId).value = "";
-      } catch ({ message: msg }) {
-        document.getElementById(_this.uniqueId).value = "";
+      formData.append("position", "c"); //c 表示图片是代表的是那个地方
+      formData.append("file", filse);
+
+      const url = await _this.upLoadImgAdd(formData);
+      console.log(url)
+      if (url != null && url.length > 0) {
+        let _url = url;
+        _url = _url.indexOf("http") != -1 ? _url : "http:" + _url; //如果返回的地址中没有http自动拼接
+        let index = _this.addImgRange != null ? _this.addImgRange.index : 0; //获取插入时的位置索引，如果获取失败，则插入到最前面
+        _this.$refs.qullEditor.quill.insertEmbed(index, "image", _url);
+        let _img = new Image();
+        _img.src = _url;
+        _this.$refs.qullEditor.quill.formatText(index,index + 1,"width",400 + "px");
+      } else {
+        console.log("what ???");
       }
     },
     upLoadImgAdd(formData) {
       return new Promise((resolve, reject) => {
-        if (true) {
-          resolve("http://localhost:3000/api/ActileImgUp");
-        } else {
-          reject({ message: "图片上传失败！" });
-        }
+        axios.post("http://localhost:3000/api/update", formData).then(res => {
+          //this.fielLsits = res.data.data
+          if (res.data.success === true) {
+            this.urlPath = res.data.data.path;
+            resolve(res.data.data.path);
+          } else {
+            this.$message.error("图片插入失败");
+          }
+        });
       });
     }
   },
   created: function() {
-    console.log(Quill.sources.USER)
+    console.log(Quill.sources.USER);
     let _this = this;
     _this.imgPercent = 0;
     _this.editorContent = _this.text;
@@ -124,15 +121,19 @@ event.enable(true)
   mounted() {
     let _this = this;
     //imgHandler();
-    
     let imgHandler = async function(image) {
-      _this.addImgRange=_this.$refs.qullEditor.quill.getSelection()
+      _this.addImgRange = _this.$refs.qullEditor.quill.getSelection();
       if (image) {
         let filInput = document.getElementById(_this.uniqueId);
-        filInput.click();
+        filInput.click(filInput.files);
       }
     };
-    this.$refs.qullEditor.quill.getModule("toolbar").addHandler("image", imgHandler);
+    let videoHandler = async function(state) {
+      
+    }
+    this.$refs.qullEditor.quill
+      .getModule("toolbar")
+      .addHandler("image", imgHandler);
     //_this.$refs.qullEditor.quill.getModule("toolbar");
   }
 };

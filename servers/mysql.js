@@ -67,7 +67,7 @@ let insertPost = (value) => {
 
 //文章图片上传
 let insertArtice = (value)=>{
-	let _sql = `insert into articleImg (user_id,img_name,img_path,img_time)VALUES(?,?,?,now())`
+	let _sql = `insert into articleImg (user_id,img_name,img_path,img_tp,img_type,img_size,img_time)VALUES(?,?,?,?,?,?,now())`
 	return query(_sql,value)
 }
 //根据文件名称查询文章图片
