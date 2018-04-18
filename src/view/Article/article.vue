@@ -17,7 +17,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <vue-Editor :text="content" :editorChange="editorChange" class="editer"></vue-Editor>
+          <vue-Editor :text="contents" :editorId="editorChange" class="editer"></vue-Editor>
           <!--<quill-editor v-model="infor.article_content" class="editer" :options="editorOption" @ready="onEditorReady($event)" > </quill-editor>-->
         </div>
         <div class="conment_info">
@@ -37,27 +37,28 @@
           <div class="artcle_class">
             <div class="title">
               <p>分类</p>
-              <span>设置分类</span>
+              <span @click="setType" class="">设置分类</span>
             </div>
             <div class="select_class">
-              <el-select v-model="infor.article_type_id" clearable placeholder="请选择分类">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              <el-select v-model="infor.article_type_id" clearable filterable placeholder="请选择分类">
+                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.type_name">
                 </el-option>
               </el-select>
             </div>
           </div>
           <div class="is_artcle">
-            <el-switch v-model="infor.comment_status" active-color="#13ce66" active-text="评论/留言" inactive-color="#ff4949">
+            <el-switch v-model="infor.comment_status" active-color="#13ce66" inactive-text="评论/留言" inactive-color="#ff4949" active-value=1 inactive-value=0>
             </el-switch>
-            <el-switch v-model="infor.article_issue" active-color="#13ce66" active-text="是否发布" inactive-color="#ff4949">
+            <el-switch v-model="infor.article_issue" active-color="#13ce66" inactive-text="是否发布" inactive-color="#ff4949" active-value=1 inactive-value=0>
             </el-switch>
-            <el-switch v-model="infor.article_original" active-color="#13ce66" active-text="是否发布" inactive-color="#ff4949">
+            <el-switch v-model="infor.article_original" active-color="#13ce66" inactive-text="是否发布" inactive-color="#ff4949" active-value=1 inactive-value=0>
             </el-switch>
           </div>
         </div>
       </div>
       <vueFooter></vueFooter>
     </el-form>
+    <vuesetType :setTig="settypeTig" @setChange="ppp"></vuesetType>
     <el-dialog title="上传图片" :visible.sync="upimg">
       <el-form :model="upFrom">
         <el-form-item label="图片名称" :label-width="formLabelWidth">
@@ -80,56 +81,73 @@
   </div>
 </template>
 <script>
-import vueEditor from '@/components/uedit'
-import vueFooter from '@/components/edit_footer'
-import axios from 'axios'
+import vueEditor from "@/components/uedit";
+import vueFooter from "@/components/edit_footer";
+import vuesetType from "@/view/Article/setType";
+import axios from "axios";
 export default {
-
-  name: 'login',
+  name: "login",
   data() {
     return {
       infor: {
-        article_title: '',
-        article_author: '',
-        article_content: '',
-        article_excerpt: '',
-        article_type_id: '',
+        article_title: "",
+        article_author: "",
+        article_content: "",
+        article_excerpt: "",
+        article_type_id: "",
         comment_status: true,
         article_issue: true,
-        article_original: true,
+        article_original: false
       },
       editorOption: {},
+      options: "",
+      settypeTig: false,
       upimg: false,
       myups: false,
       upFrom: {
-        name: '',
-        imgPath: ''
+        name: "",
+        imgPath: ""
       },
       fielLsits: [],
       articleImglist: [],
-      formLabelWidth: '120px',
-      rules: {
-
-      }
-    }
+      contents: "",
+      formLabelWidth: "120px",
+      rules: {}
+    };
   },
   components: {
     vueEditor,
-    vueFooter
+    vueFooter,
+    vuesetType
+  },
+  created: function() {
+    this.indArtice();
   },
   methods: {
     editorChange: function(html) {
-      this.content = html
+      this.contents = html;
     },
-    onEditorReady(editor) {
-
+    indArtice() {
+      axios.get("http://localhost:3000/api/findArticeTypeall").then(res => {
+        this.options = res.data.data;
+        console.log(this.options);
+      });
+    },
+    ppp(msg) {
+      this.settypeTig = msg;
+      this.indArtice();
+      console.log(msg);
+    },
+    onEditorReady(editor) {},
+    setType() {
+      this.settypeTig = true;
     },
     upload() {
-      this.upimg = true
-      axios.post('http://localhost:3000/api/findDataArtices').then(res => {
-        this.fielLsits = res.data.data
-        console.log(this.fielLsits)
-      })
+      this.upimg = true;
+      axios.get("http://localhost:3000/api/findDataArtices").then(res => {
+        this.fielLsits = res.data.data;
+        console.log(this.fielLsits);
+      });
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
@@ -137,56 +155,58 @@ export default {
     handlePreview(res, file, filelist) {
       console.log(this.upFrom.name);
       console.log(file);
-      console.log(res)
-      console.log(filelist)
+      console.log(res);
+      console.log(filelist);
     },
     myupsuccess(file) {
-      this.myups = true
+      this.myups = true;
     },
 
-    myup(content) {
-     let fileObj = content.file;
-     let formData = new FormData();
-     formData.append("","z");
-     formData.append("file",fileObj);
+    myup(contents) {
+      let fileObj = contents.file;
+      let formData = new FormData();
+      formData.append("", "z");
+      formData.append("file", fileObj);
 
-       axios({
-          method: 'post',
-          headers: { 'Content-Type': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
-          url: content.action,
-          data: formData
-        }).then(res => {
+      axios({
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        url: contents.action,
+        data: formData
+      })
+        .then(res => {
           if (res.data.success == false) {
             this.$message.error(res.data.msg);
-            this.fielLsits=''
+            this.fielLsits = "";
           } else {
             this.$message({
-            message: res.data.msg,
-            type: 'success'
-          });
-            this.upFrom.name = res.data.data.name
-            this.upFrom.imgPath = res.data.data.path
-            this.fielLsits=res.data.data
-            return
+              message: res.data.msg,
+              type: "success"
+            });
+            this.upFrom.name = res.data.data.name;
+            this.upFrom.imgPath = res.data.data.path;
+            this.fielLsits = res.data.data;
+            return;
           }
 
-          console.log(res)
-          content.onSuccess('上传成功')
-        }).catch(err => {
-          
-          if (err.response) {
-            content.onError('配置文件上传失败')
-          } else if (err.request) {
-            content.onError('上传失败，服务器无响应')
-          } else {
-            content.onError('请求封装失败')
-          }
-
+          console.log(res);
+          contents.onSuccess("上传成功");
         })
+        .catch(err => {
+          if (err.response) {
+            contents.onError("配置文件上传失败");
+          } else if (err.request) {
+            contents.onError("上传失败，服务器无响应");
+          } else {
+            contents.onError("请求封装失败");
+          }
+        });
     }
   }
-}
-
+};
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss' scoped>
@@ -203,7 +223,8 @@ export default {
 .el-form-item {
   margin-bottom: 0px;
   .el-form-item__content {
-    .el-input {}
+    .el-input {
+    }
   }
 }
 
@@ -216,7 +237,7 @@ export default {
 .conment_info {
   float: right;
   width: 228px;
-  border: 1px solid #EEE;
+  border: 1px solid #eee;
   display: inline-block;
   padding: 20px;
   font-size: 16px;
@@ -228,10 +249,10 @@ export default {
     margin-bottom: 10px;
     .artcle_image {
       height: 150px;
-      background: #13CFF4;
+      background: #13cff4;
       line-height: 150px;
       text-align: center;
-      color: #FFF;
+      color: #fff;
     }
     .img_btn {
       width: 110px;
@@ -256,13 +277,13 @@ export default {
   }
 }
 
-.el-button+.el-button {
+.el-button + .el-button {
   margin: 0;
 }
 
 .edit_footer {
   height: 102px;
-  background: #FDFDFD;
+  background: #fdfdfd;
   box-shadow: 0 -2px 4px 2px rgba(0, 0, 0, 0.08);
   margin-left: -20px;
   position: fixed;
@@ -276,10 +297,9 @@ export default {
     padding-top: 2.5%;
     .edit_txt {
       font-size: 14px;
-      color: #8D8D8D;
+      color: #8d8d8d;
       margin-right: 20px;
     }
   }
 }
-
 </style>

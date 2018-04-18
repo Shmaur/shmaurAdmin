@@ -28,6 +28,7 @@ export default {
       },
       uniqueId: "",
       imgPercent: "",
+      contents:"",
       editorContent: "",
       urlPath: "",
       editorOption: {
