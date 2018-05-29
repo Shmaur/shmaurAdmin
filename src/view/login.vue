@@ -39,7 +39,9 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
+//let Storage = require("./store/setion.js");
+import { set,get } from '../store/setion';
 export default {
   name: 'login',
   data() {
@@ -71,6 +73,7 @@ export default {
     axios.get('http://httpbin.org/ip').then(data=>{
           this.loginForm.ip=data.data.origin
         })
+       // Storage.set("hello",12345)
   },
   methods: {
     logins() {
@@ -81,8 +84,8 @@ export default {
           
           axios.post('http://localhost:3000/api/login', this.loginForm).then(data=> {
            let token = data.data.data.token
-            if (data.status == 200) {
-              sessionStorage.setItem('token', token)
+            if (data.data.success == true) {
+              set('userInfo', data.data.data)
               _this.$router.push({ path: '/homePage' })
             } else {
               this.$message.error('登录失败，请检查账户或者密码是否正确！')

@@ -17,8 +17,8 @@
     </el-form-item>
   </el-form>
   <el-tag
-  :key="tag"
-  v-for="tag in settypes"
+  :key="index"
+  v-for="(tag, index) in settypes"
   closable
   :disable-transitions="false"
   @close="deleteClose(tag)">
@@ -42,7 +42,7 @@ export default {
         type_name: ""
       },
       formLabelWidth: "100px",
-      stairs: ""
+      stairs: []
       //settypeTig:false,
     };
   },
@@ -94,9 +94,10 @@ export default {
         });
     },
     findstair() {
+      let _this=this
       axios.get("http://localhost:3000/api/findStairType").then(res => {
-        this.stairs = new Object(res.data.data);
-        console.log(this.stairs);
+         _this.stairs = res.data.data;
+         //console.log("?????  "+this.stairs);
       });
     },
     deleteClose(tag) {
@@ -120,7 +121,7 @@ export default {
     },
     cloeset() {
       this.findstair()
-      this.$emit("setChange", this.setTig);
+      this.$emit("setChange", this.setTig)
     }
   },
   watch: {}

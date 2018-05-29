@@ -1,7 +1,7 @@
 <template>
   <div class="shmaur_frame">
  <div id="wrapper">
-   <sh-LeftNav></sh-LeftNav>
+   <shLeftNav></shLeftNav>
     <div class="main_content">
        <transition name="move" mode="out-in">
          <router-view></router-view>

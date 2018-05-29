@@ -1,18 +1,18 @@
 <template>
   <div class="shmaur_artcleList">
-    <el-table ref="artcleList" :data="artcleList" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
+    <el-table ref="articleList" :data="articleList" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55">
       </el-table-column>
-      <el-table-column label="文章标题" width="120">
-        <template slot-scope="scope">{{ scope.row.artcleTitle }}</template>
+      <el-table-column label="文章标题">
+        <template slot-scope="scope">{{ scope.row.article_title }}</template>
       </el-table-column>
-      <el-table-column prop="article_author" label="作者" width="">
+      <el-table-column prop="user_id" label="作者" width="">
       </el-table-column>
       <el-table-column prop="article_class" label="分类目录" width="">
       </el-table-column>
       <el-table-column prop="article_label" label="标签" width="">
       </el-table-column>
-      <el-table-column prop="com" label="评论" width="">
+      <el-table-column prop="article_count" label="评论" width="">
       </el-table-column>
       <el-table-column prop="article_modified" label="日期" width="">
       </el-table-column>
@@ -26,21 +26,18 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
 
   name: 'login',
   data() {
     return {
-      artcleList: [{
-        artcleTitle: '标题1',
-        article_author: '黄金良',
-        article_class: 'js',
-        article_label: 'js',
-        com: '五条评论',
-        article_modified: '2017-08-09'
-      }]
+      articleList: []
 
     }
+  },
+  created: function() {
+    this.articleLists();
   },
   components: {
 
@@ -48,6 +45,12 @@ export default {
   methods: {
     handleSelectionChange(val) {
       this.multipleSelection = val;
+    },
+    articleLists(){
+      axios.get("http://localhost:3000/api/findArticle").then(res => {
+        this.articleList = res.data.data;
+        console.log(this.options);
+      });
     }
   }
 }

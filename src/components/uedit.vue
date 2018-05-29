@@ -2,7 +2,7 @@
   <div id="shmaur_uedit">
 <!--     <el-form class="edit_from" autoComplete="on" :model="infor" :rules="rules" ref="editForm" label-position="left">
        -->    
-      <quill-editor ref="qullEditor" @focus="onEditorFocus($event)" v-model="infor.content" class="editer" :options="editorOption"  @change="editorChange"> </quill-editor>
+      <quill-editor ref="qullEditor" @focus="onEditorFocus($event)" v-model="content" class="editer" :options="editorOption"  @change="onEditorChange($event)" @blur="onEditorBlur($event)"> </quill-editor>
     <!-- </el-form> -->
     <form action="" method="post" enctype="multipart/form-data" id="uploadFormMulti">
     <input style="display: none" :id="uniqueId" type="file" name="avator" multiple accept="image/jpg,image/jpeg,image/png,image/gif" @change="upLoadImg()"><!--style="display: none"-->
@@ -21,11 +21,7 @@ export default {
   props: ["text", "editorId"],
   data() {
     return {
-      infor: {
-        content: "",
-        title: "",
-        author: ""
-      },
+      content: "",
       uniqueId: "",
       imgPercent: "",
       contents:"",
@@ -71,6 +67,17 @@ export default {
       console.log("获取到光标");
       event.enable(true);
     },
+    onEditorBlur(quill) {
+      this.$emit("ChangeContent", this.content)
+        console.log('editor blur!', quill)
+      },
+      onEditorReady(quill) {
+        console.log('editor ready!', quill)
+      },
+      onEditorChange({ quill, html, text }) {
+        console.log('editor change!', quill, html, text)
+        this.content = html
+      },
     upLoadImg: async function() {
       let _this = this;
       let filse = this.$el.children.uploadFormMulti[0].files[0];

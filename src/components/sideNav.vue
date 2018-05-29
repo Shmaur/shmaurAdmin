@@ -1,6 +1,6 @@
 <template>
   <div id="shmaur_left_nav">
-    <el-menu class="menu_left" :default-active="onRoutes" router>
+    <el-menu class="menu_left" router>
       <div class="sh_header">
         <div class="sh_header_img">
           <img src="../assets/headerPortraits.jpg" alt="">
@@ -26,11 +26,6 @@
 <script>
 export default {
   name: 'login',
-  prop:{
-    date:{
-      type:String
-    }
-  },
   data() {
     return {
       itemList: [{

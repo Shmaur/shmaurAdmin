@@ -17,14 +17,19 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <vue-Editor :text="contents" :editorId="editorChange" class="editer"></vue-Editor>
+          <vue-Editor :text="contents" :editorId="editorChange" @ChangeContent="saveCentent" class="editer"></vue-Editor>
           <!--<quill-editor v-model="infor.article_content" class="editer" :options="editorOption" @ready="onEditorReady($event)" > </quill-editor>-->
         </div>
         <div class="conment_info">
           <div class="artcle_img">
-            <p class="artcle_img_title">封面</p>
+            <p class="artcle_img_title">
+              封面
+            </p>
             <div class="artcle_image">
-              添加封面
+              <img width="100%" :src="infor.article_photo" alt="">
+              <form action="" method="post" enctype="multipart/form-data">
+              <input type="file" id="article_photo" style="display:none" accept="image/jpg,image/jpeg,image/png,image/gif" @change="uploadImg()">
+              </form>
             </div>
             <el-button type="text" class="img_btn" @click="upload">本地上传</el-button>
             <el-button type="text" class="img_btn">选择相册</el-button>
@@ -51,33 +56,26 @@
             </el-switch>
             <el-switch v-model="infor.article_issue" active-color="#13ce66" inactive-text="是否发布" inactive-color="#ff4949" active-value=1 inactive-value=0>
             </el-switch>
-            <el-switch v-model="infor.article_original" active-color="#13ce66" inactive-text="是否发布" inactive-color="#ff4949" active-value=1 inactive-value=0>
+            <el-switch v-model="infor.article_original" active-color="#13ce66" inactive-text="是否原创" inactive-color="#ff4949" active-value=1 inactive-value=0>
             </el-switch>
           </div>
         </div>
       </div>
-      <vueFooter></vueFooter>
-    </el-form>
-    <vuesetType :setTig="settypeTig" @setChange="ppp"></vuesetType>
-    <el-dialog title="上传图片" :visible.sync="upimg">
-      <el-form :model="upFrom">
-        <el-form-item label="图片名称" :label-width="formLabelWidth">
-          <el-input v-model="upFrom.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-upload class="upload-demo" action="http://localhost:3000/api/update" :on-preview="myupsuccess" :on-success="handlePreview" :on-remove="handleRemove" :file-list="fielLsits" list-type="picture-card" :http-request="myup">
-          <i class="el-icon-plus"></i>
-          <!-- <el-button size="small" type="primary">添加图片</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div> -->
-        </el-upload>
-        <el-dialog :visible.sync="myups">
-          <img width="100%" :src="fielLsits.imgPath" alt="">
-        </el-dialog>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="upimg = false">取 消</el-button>
-        <el-button type="primary" @click="upimg = false">确 定</el-button>
+       <div id="shmaur_edit_footer">
+    <div class="edit_footer">
+      <div class="footer_conent">
+        <div class="edit_txt">
+          <p>正文一共：字</p>
+          <p>预计阅读时间：</p>
+        </div>
+        <div class="edit_btn">
+          <el-button type="primary" @click="saveActicle">保存</el-button>
+        </div>
       </div>
-    </el-dialog>
+    </div>
+  </div>
+    </el-form>
+
   </div>
 </template>
 <script>
@@ -95,20 +93,27 @@ export default {
         article_content: "",
         article_excerpt: "",
         article_type_id: "",
+        user_id:"1",
+        article_status:true,
         comment_status: true,
+        article_label:"",
         article_issue: true,
-        article_original: false
+        article_count:0,
+        article_original: false,
+        article_photo:""
       },
       editorOption: {},
+      fielLsits:[],
       options: "",
       settypeTig: false,
       upimg: false,
       myups: false,
+      limitNub:1,
       upFrom: {
-        name: "",
-        imgPath: ""
+        img_name:"",
+        img_Path:""
       },
-      fielLsits: [],
+      //fielLsits: [],
       articleImglist: [],
       contents: "",
       formLabelWidth: "120px",
@@ -133,6 +138,35 @@ export default {
         console.log(this.options);
       });
     },
+    uploadImg(){
+      let article_photos = document.getElementById('article_photo')
+      article_photos.click()
+      let formData = new FormData();
+      formData.append("position", "z");
+      formData.append("file", article_photos.files[0]);
+      //var fr = new FileReader();
+      //fr.append(article_photos.files)
+  //console.log(fr)
+      if(article_photos.files.length > 0){
+        axios.post("http://localhost:3000/api/update",formData).then(res=>{
+          if (res.data.success == false) {
+            this.$message.error(res.data.msg);
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: "success"
+            });
+            this.upFrom.img_name = res.data.data.name;
+            this.upFrom.img_Path = res.data.data.path;
+            this.infor.article_photo = "http://localhost:3000/"+res.data.data.path;
+            return;
+          }
+          contents.onSuccess("上传成功");
+        })
+      }
+    
+     
+    },
     ppp(msg) {
       this.settypeTig = msg;
       this.indArtice();
@@ -142,30 +176,70 @@ export default {
     setType() {
       this.settypeTig = true;
     },
+    saveCentent(val){
+      this.infor.article_content = val
+      console.log(this.infor)
+    },
     upload() {
-      this.upimg = true;
+      //this.upimg = true;
+      
+this.uploadImg()
       axios.get("http://localhost:3000/api/findDataArtices").then(res => {
         this.fielLsits = res.data.data;
-        console.log(this.fielLsits);
+        console.log(this .fielLsits);
       });
     },
     handleRemove(file, fileList) {
+      axios.delete("http://localhost:3000/api/deleteArticleImg?img_name="+this.upFrom.img_name).then(res => {
+        if (res.data.success == false) {
+            this.$message.error(res.data.msg);
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: "success"
+            });
+          }
+      });
+      
       console.log(file, fileList);
     },
     handlePreview(res, file, filelist) {
+      this.myups=true
       console.log(this.upFrom.name);
       console.log(file);
       console.log(res);
       console.log(filelist);
     },
     myupsuccess(file) {
-      this.myups = true;
-    },
+      if(this.upFrom.img_Path == ""){
+        this.fielLsits=""
+      }
+      this.infor.article_photo = this.upFrom.path
+      this.upimg=false
 
+    },
+saveActicle(){
+  axios.post("http://localhost:3000/api/creatArticle",this.infor).then(res =>{
+    if (res.data.success == false) {
+            this.$message.error(res.data.msg);
+          } else {
+            this.$message({
+              message: res.data.msg,
+              type: "success"
+            });
+          }
+  })
+  console.log(this.infor)
+},
+addImg(){
+  console.log(this.infor)
+this.infor.article_photo = this.upFrom.path
+this.upimg=false
+},
     myup(contents) {
       let fileObj = contents.file;
       let formData = new FormData();
-      formData.append("", "z");
+      formData.append("position", "z");
       formData.append("file", fileObj);
 
       axios({
@@ -186,8 +260,8 @@ export default {
               message: res.data.msg,
               type: "success"
             });
-            this.upFrom.name = res.data.data.name;
-            this.upFrom.imgPath = res.data.data.path;
+            this.upFrom.img_name = res.data.data.name;
+            this.upFrom.img_Path = res.data.data.path;
             this.fielLsits = res.data.data;
             return;
           }
@@ -299,6 +373,27 @@ export default {
       font-size: 14px;
       color: #8d8d8d;
       margin-right: 20px;
+    }
+  }
+}
+.edit_footer {
+  height: 102px;
+  background: #FDFDFD;
+  box-shadow: 0 -2px 4px 2px rgba(0, 0, 0, 0.08);
+  margin-left: -20px;
+  position: fixed;
+  display: flex;
+  width: 100%;
+  bottom: 0;
+  z-index: 99;
+  .footer_conent {
+    display: flex;
+    margin: 0 auto;
+    padding-top:2.5%;
+    .edit_txt {
+      font-size: 14px;
+      color: #8D8D8D;
+      margin-right:20px;
     }
   }
 }

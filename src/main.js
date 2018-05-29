@@ -13,16 +13,16 @@ import '@/assets/mains.scss'
 import VueResource from 'vue-resource'
 
 
-
 axios.defaults.headers.common['Authorization'] = "application/json";
-axios.defaults.headers.post['Content-Type']='application/x-www-form-urlencoded';
-axios.interceptors.request.use(function(config){
-  //在请求发送之前做一些事
-  console.log('被拦截')
-  return config;
-},function(error){
-  //当出现请求错误是做一些事
-  return Promise.reject(error);
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.interceptors.request.use(function(config) {
+    //在请求发送之前做一些事
+    //console.log(url)
+    console.log('被拦截')
+    return config;
+}, function(error) {
+    //当出现请求错误是做一些事
+    return Promise.reject(error);
 });
 
 //引入editor插件
@@ -38,8 +38,8 @@ Vue.use(ElementUI)
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  template: '<App/>',
-  components: { App }
+    el: '#app',
+    router,
+    template: '<App/>',
+    components: { App }
 })
